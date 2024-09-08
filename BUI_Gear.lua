@@ -394,11 +394,16 @@ local function ShowTooltip(self,show)
 		elseif self.type=="Abil" then
 			local id=SavedData[self.gear+INSTANCE*100] and SavedData[self.gear+INSTANCE*100].abil and SavedData[self.gear+INSTANCE*100].abil[self.pair] and SavedData[self.gear+INSTANCE*100].abil[self.pair][self.slot] or nil
 			if id and id~=0 then
---				d(string.format('Tooltip type: %s, g: %s, y: %s, x: %s, id: %s', tostring(self.type), tostring(self.gear), tostring(self.y), tostring(self.x),tostring(id)))
-				local skillType,skillLineIndex,skillIndex=GetSpecificSkillAbilityKeysByAbilityId(GetCurrentAbilityId(id))
+				--d(string.format('Tooltip type: %s, g: %s, y: %s, x: %s, id: %s, abilityId: %s', tostring(self.type), tostring(self.gear), tostring(self.y), tostring(self.x),tostring(id),tostring(GetCurrentAbilityId(id))))				
+				local skillType,skillLineIndex,skillIndex=GetSpecificSkillAbilityKeysByAbilityId(GetCurrentAbilityId(id))				
 				ActiveTooltip=SkillTooltip
 				InitializeTooltip(ActiveTooltip,self,LEFT,0,0,RIGHT)
-				ActiveTooltip:SetSkillAbility(skillType,skillLineIndex,skillIndex)
+				if TranslateIdToScribedId(id) then
+					local primaryScriptId,secondaryScriptId,tertiaryScriptId=GetCraftedAbilityActiveScriptIds(id)
+					ActiveTooltip:SetCraftedAbility(id, primaryScriptId, secondaryScriptId, tertiaryScriptId)
+				else	
+					ActiveTooltip:SetSkillAbility(skillType,skillLineIndex,skillIndex)
+				end
 			end
 		end
 	else
@@ -765,7 +770,7 @@ function TranslateIdToScribedId(id)
 	local scribed = IsCraftedAbilityScribed(id)
 	if scribed then
 		scribedId=GetAbilityIdForCraftedAbilityId(id)
-			--d('ID:' .. id .. ' SCRIBED ID:' .. scribedId)
+			--d('ID:' .. id .. ' SCRIBED ID:' .. scribedId .. ' NAME: ' .. GetAbilityName(scribedId))
 		return scribedId
 	end
 	return nil
@@ -1025,9 +1030,7 @@ local function FillPreview(gear)
 			local frame=_G["BUI_Gear_Prev_Abil"..y..x]
 			if frame then
 				local id=SavedData[gear+INSTANCE*100] and SavedData[gear+INSTANCE*100].abil and SavedData[gear+INSTANCE*100].abil[y] and SavedData[gear+INSTANCE*100].abil[y][x] or nil
-				local texture=id and GetAbilityIcon(GetCurrentAbilityId(id)) or IconBlank
-				d(id)
-				if id and TranslateIdToScribedId(id) then texture=GetCraftedAbilityIcon(id) end
+				local texture=id and GetAbilityIcon(GetCurrentAbilityId(id)) or IconBlank				
 				frame:SetTexture(texture)
 			end
 		end
@@ -1322,8 +1325,9 @@ local function OnCursorPickup(self, cursorType, param1, param2, param3)
 			local sourceSlot=param2
 			local abilityIndex=param3
 			local abilityId=GetAbilityIdByIndex(abilityIndex)
+			local craftedId=GetCraftedAbilityIdAtIndex(abilityIndex)			
 			local id=TranslateIdToScribedId(abilityIndex) and abilityIndex or GetBaseAbilityId(abilityId)
-			d(string.format('Slot %d, AbilityIndex: %d, AbilityId: %d, BaseAbilityId: %d', sourceSlot, abilityIndex, abilityId, id))
+			--d(string.format('Slot %d, AbilityIndex: %d, AbilityId: %d, BaseAbilityId: %d', sourceSlot, abilityIndex, abilityId, id))
 			local baseSkillType, baseSkillindex, baseAbilityIndex, morphChoice=GetSpecificSkillAbilityKeysByAbilityId(id)
 			if baseSkillType and baseSkillindex and baseAbilityIndex then
 				local _,_,_,_, ult, purchased=GetSkillAbilityInfo(baseSkillType, baseSkillindex, baseAbilityIndex)
@@ -1381,8 +1385,9 @@ local function ContextClick(c,option)
 			for x=1, 6 do
 				local id=GetSlotBoundId(x+2)
 				if id>0 then
-					CheckDataStructure(c.gear+INSTANCE*100,"abil",pair)
+					CheckDataStructure(c.gear+INSTANCE*100,"abil",pair)					
 					SavedData[c.gear+INSTANCE*100].abil[pair][x]=GetBaseAbilityId(id)
+					if TranslateIdToScribedId(id) then SavedData[c.gear+INSTANCE*100].abil[pair][x]=id end
 					FillSlot(c.gear,"Abil",pair,x)
 				end
 			end
