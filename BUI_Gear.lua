@@ -843,7 +843,7 @@ local function EquipAbilityBar_v3(gear,pair)
 			for slot=1,6 do
 				local id=SavedData[gear+INSTANCE*100] and SavedData[gear+INSTANCE*100].abil and SavedData[gear+INSTANCE*100].abil[pair] and SavedData[gear+INSTANCE*100].abil[pair][slot] or nil
 				if id then
-					hotbarData:AssignSkillToSlotByAbilityId(slot+2,id)
+					hotbarData:AssignSkillToSlotByAbilityId(slot+2,GetCurrentAbilityId(id))
 				else
 --					hotbarData:ClearSlot(slot+2)
 				end
