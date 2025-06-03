@@ -1,8 +1,8 @@
 ## Title: |c4B8BFEBandits|r Gear Manager
 ## Description: Can save and equip different wears and abilitys.
 ## Author: |c32CD32secretrob|r, |c4B8BFEHoft|r
-## Version: 2.33
-## APIVersion: 101045
+## Version: 2.34
+## APIVersion: 101046
 ## SavedVariables: BUI_CharData BUI_GlobalData
 
 ; Permission is hereby granted, free of charge, to any person obtaining a copy

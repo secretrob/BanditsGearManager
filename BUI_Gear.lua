@@ -155,7 +155,7 @@ local Localization={
 	Gears="Total gear slots: ",
 	SlotSize="Slot size: ",
 	MarkCollect="Mark not collected set items",
-	AbilityManager="Ability manager 3.0 (beta)",
+	AbilityManager="beta 3.0 (auto fills backbar)",
 	--Interface
 	GearManager="Gear Manager",	--Proper name, do not translate.
 	Gear="Gear",
